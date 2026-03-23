@@ -22,7 +22,7 @@ except ImportError:
 
 
 # Actual tournament results (R1 + R2 = 48 games)
-# Each bit: 0 = top team in the bracket wins, 1 = lower team on the bracket wins
+# Each bit: 0 = first-listed team wins, 1 = second-listed team wins
 ACTUAL_RESULTS = "010000000100101001101000010000000011111101010101"
 
 

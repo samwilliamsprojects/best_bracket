@@ -26,7 +26,7 @@ from decode_bracket import decode, ROUND_NAMES
 
 
 # Actual tournament results (R1 + R2 = 48 games)
-# Each bit: 0 = higher seed won, 1 = lower seed won
+# Each bit: 0 = first-listed team won, 1 = second-listed team won
 ACTUAL_RESULTS = "010000000100101001101000010000000011111101010101"
 
 
@@ -80,7 +80,7 @@ def prove_bracket(proof_path: str, chunk_path: str, commitment: dict) -> bool:
 
     chunk_data = open(chunk_path, "rb").read()
     chunk_size = len(chunk_data)
-    print(f"Chunk size: {chunk_size:,} bytes ({chunk_size / (1024*1024):.1f} MB)")
+    print(f"Chunk size: {chunk_size:,} bytes ({chunk_size / (1024*1024):.1f} MiB)")
     print(f"Chunk index: {chunk_index:,}")
     print()
 
