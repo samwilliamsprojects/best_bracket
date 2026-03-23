@@ -1,0 +1,13 @@
+{
+  "algorithm": "blake3",
+  "leaf_hash_bytes": 32,
+  "chunk_bytes": 8388608,
+  "record_bytes": 8,
+  "records": 1000000000000,
+  "total_chunks": 953754,
+  "total_data_bytes": 8000000000000,
+  "shard_count": 3805,
+  "shard_format": "raw binary (little-endian uint64, no file header)",
+  "note": "Merkle tree is over sequential chunk hashes of raw shard bytes. Each leaf = blake3(0x00 || chunk_bytes). Internal nodes = blake3(0x01 || left || right). Odd-count levels duplicate the last node.",
+  "root_hex": "c0bf64aedf2d6b18c027d61eaee3790ea81e2450f6157fb6eba3a894ab91a6e2"
+}
