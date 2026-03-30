@@ -21,9 +21,9 @@ except ImportError:
     raise SystemExit(1)
 
 
-# Actual tournament results (R1 + R2 = 48 games)
+# Actual tournament results (R1 + R2 + S16 + E8 = 60 games)
 # Each bit: 0 = first-listed team wins, 1 = second-listed team wins
-ACTUAL_RESULTS = "010000000100101001101000010000000011111101010101"
+ACTUAL_RESULTS = "010000000100101001101000010000000011111101010101010001001100"
 
 
 def hash_leaf(data: bytes) -> bytes:
@@ -56,11 +56,7 @@ def verify(proof_file: str, chunk_file: str, commitment_file: str = "commitment.
     claimed_uint64 = int(bracket_bits, 2)
     claimed_bytes = struct.pack("<Q", claimed_uint64)
 
-    label = ""
-    if "game_49_outcome" in proof:
-        label = f" ({proof['game_49_outcome']} + {proof['game_50_outcome']})"
-
-    print(f"Verifying bracket #{bracket_index:,}{label}")
+    print(f"Verifying bracket #{bracket_index:,}")
     print(f"bits: {bracket_bits}")
     print(f"uint64: {claimed_uint64}")
     print(f"chunk: {chunk_index}, offset: {offset}")
@@ -76,13 +72,13 @@ def verify(proof_file: str, chunk_file: str, commitment_file: str = "commitment.
         return False
     print(f"[PASS] Bracket bits match chunk data at expected offset")
 
-    # Verify first 48 games match actual tournament results
-    predicted = bracket_bits[:48]
-    mismatches = [i for i in range(48) if predicted[i] != ACTUAL_RESULTS[i]]
+    # Verify games match actual tournament results
+    predicted = bracket_bits[:len(ACTUAL_RESULTS)]
+    mismatches = [i for i in range(len(ACTUAL_RESULTS)) if predicted[i] != ACTUAL_RESULTS[i]]
     if mismatches:
         print(f"[FAIL] {len(mismatches)} game(s) do not match actual results")
         return False
-    print(f"[PASS] First 48 games match actual tournament results")
+    print(f"[PASS] First {len(ACTUAL_RESULTS)} games match actual tournament results")
 
     # Verify the leaf hash
     computed_leaf = hash_leaf(chunk_data)
@@ -116,13 +112,11 @@ def verify(proof_file: str, chunk_file: str, commitment_file: str = "commitment.
 
 
 def main():
-    # The 4 brackets covering all outcomes of games 49 and 50
-    # (Iowa vs Nebraska) x (Texas vs Purdue)
+    # Two remaining brackets — both have UCONN and Michigan winning E8
+    # They differ only on the championship game
     proof_sets = [
-        ("data/proof_0_0.json", "data/chunk_0_0.bin", "Iowa wins, Texas wins"),
-        ("data/proof_0_1.json", "data/chunk_0_1.bin", "Iowa wins, Purdue wins"),
-        ("data/proof_1_0.json", "data/chunk_1_0.bin", "Nebraska wins, Texas wins"),
-        ("data/proof_1_1.json", "data/chunk_1_1.bin", "Nebraska wins, Purdue wins"),
+        ("data/proof_illinois_champ.json", "data/chunk_illinois_champ.bin", "Illinois wins championship"),
+        ("data/proof_arizona_champ.json", "data/chunk_arizona_champ.bin", "Arizona wins championship"),
     ]
 
     results = []
@@ -147,7 +141,11 @@ def main():
     passed = sum(results)
     total = len(results)
     if passed == total:
-        print(f"ALL {total} PROOFS VERIFIED — 50 consecutive correct picks guaranteed.")
+        print(f"ALL {total} PROOFS VERIFIED.")
+        print(f"Both brackets predict: UCONN beats Duke, Illinois beats Iowa,")
+        print(f"Arizona beats Purdue, Michigan beats Tennessee.")
+        print(f"Then Illinois beats UCONN, Arizona beats Michigan.")
+        print(f"Championship: Illinois vs Arizona — one bracket for each winner.")
     else:
         print(f"{passed}/{total} proofs verified.")
     print("=" * 70)

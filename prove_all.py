@@ -25,9 +25,9 @@ except ImportError:
 from decode_bracket import decode, ROUND_NAMES
 
 
-# Actual tournament results (R1 + R2 = 48 games)
+# Actual tournament results (R1 + R2 + S16 + E8 = 60 games)
 # Each bit: 0 = first-listed team won, 1 = second-listed team won
-ACTUAL_RESULTS = "010000000100101001101000010000000011111101010101"
+ACTUAL_RESULTS = "010000000100101001101000010000000011111101010101010001001100"
 
 
 # Hashing
@@ -241,10 +241,8 @@ def main():
     print(f"Etherscan: https://etherscan.io/tx/0xb0c2dd3c980246d7ba12fe30fa811e5c623b55b5af95e09fd02770174a193187")
 
     proof_sets = [
-        ("data/proof_0_0.json", "data/chunk_0_0.bin"),
-        ("data/proof_0_1.json", "data/chunk_0_1.bin"),
-        ("data/proof_1_0.json", "data/chunk_1_0.bin"),
-        ("data/proof_1_1.json", "data/chunk_1_1.bin"),
+        ("data/proof_illinois_champ.json", "data/chunk_illinois_champ.bin"),
+        ("data/proof_arizona_champ.json", "data/chunk_arizona_champ.bin"),
     ]
 
     results = []
@@ -266,15 +264,13 @@ def main():
         status = "VERIFIED" if results[i] else "FAILED"
         with open(pf) as f:
             p = json.load(f)
-        g49 = p.get("game_49_outcome", "?")
-        g50 = p.get("game_50_outcome", "?")
-        print(f"[{status}]  Bracket #{p['bracket_index']:,}  ({g49} wins, {g50} wins)")
+        print(f"[{status}]  Bracket #{p['bracket_index']:,}")
 
     print()
     if passed == total:
         print(f"ALL {total} PROOFS VERIFIED.")
-        print(f"All 4 possible outcomes of games 49 and 50 are covered.")
-        print(f"50 consecutive correct picks guaranteed.")
+        print(f"Both brackets predict: Illinois beats UCONN, Arizona beats Michigan.")
+        print(f"Championship: one bracket has Illinois winning, one has Arizona.")
     else:
         print(f"{passed}/{total} proofs verified.")
     hr()
